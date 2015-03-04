@@ -2,20 +2,6 @@ import java.util.*;
 
 public class MorrisGame
 {
-	//public MorrisPositionList gameBoard;
-
-	//public MorrisGame()
-	//{
-	//	gameBoard = new MorrisPositionList();
-	//}
-
-	//public MorrisGame(List<Character> inputBoard)
-	//{
-	//	gameBoard = new MorrisPositionList(inputBoard);
-	//}
-
-
-
 	public static int statEstOpening(MorrisPositionList board)
 	{
 		return (board.getNumPieces(posType.W) - board.getNumPieces(posType.B));
@@ -39,8 +25,10 @@ public class MorrisGame
 		{
 			return 10000;
 		}
-
-		return 0;
+		else
+		{
+			return 1000*(wPieces - bPieces) - numBMoves;
+		}
 	}
 	/*
 		Input: a board position
@@ -88,6 +76,23 @@ public class MorrisGame
 		{
 			return generateMove(board);
 		}
+	}
+
+	
+	/*
+		Input: a board position
+		Output: a list L of board positions
+	*/
+	public static List<MorrisPositionList> generateMovesMidgameEndgameBlack(MorrisPositionList board)
+	{
+		MorrisPositionList tempb = board.getFlipBoard();
+		List<MorrisPositionList> moves = generateMovesMidgameEndgame(tempb);
+		for (int i = 0; i < moves.size(); i++)
+		{
+			MorrisPositionList b = moves.get(i);
+			moves.set(i, b.getFlipBoard());
+		}
+		return moves;
 	}
 
 	/*
