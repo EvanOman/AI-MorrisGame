@@ -1,20 +1,27 @@
 import java.util.*;
-import java.io.*;
 
 public class MiniMaxGameBlack
 {
-	public static int COUNTER = 0;
-
 	public static void main(String[] args)
 	{
+		/* Reads in the parameters */
 		String inputFileName = args[0];
 		String outputFileName = args[1];
 		int depth = Integer.parseInt(args[2]);
-		MorrisPositionList initBoard = new MorrisPositionList(getBoardConfig(inputFileName));
+
+		/* Makes initial board object(reads from specified file) */
+		MorrisPositionList initBoard = new MorrisPositionList(MorrisGame.getBoardConfig(inputFileName));
+
+		/* Performs the search */
 		outputObj algOut = MiniMax(depth, true, initBoard);
-		writeOutput(algOut, outputFileName);
+
+		/* Writes the output to the specified file */
+		MorrisGame.writeOutput(algOut, outputFileName);
 	}
 
+	/*
+		Minimax Procedure for finding optimal move for black
+	*/
 	public static outputObj MiniMax(int depth, boolean isBlack, MorrisPositionList board)
 	{
 		outputObj out = new outputObj();
@@ -22,6 +29,7 @@ public class MiniMaxGameBlack
 		if (depth == 0)
 		{
 			out.val = MorrisGame.statEstMidgameEndgame(board);
+			out.numNodes++;
 			return out;
 		}
 
@@ -34,7 +42,6 @@ public class MiniMaxGameBlack
 			{
 				in = MiniMax(depth - 1, false, b);
 				out.numNodes += in.numNodes;
-				out.numNodes++;
 				if (in.val > out.val)
 				{
 					out.val = in.val;
@@ -55,67 +62,4 @@ public class MiniMaxGameBlack
 		}
 		return out;
 	}
-	
-	public static class outputObj
-	{
-		public int val, numNodes;
-		public MorrisPositionList b;
-		public String toString()
-		{
-			return 	"BoardPosition:\t\t\t" + b + "\n" +
-					"Positions Evaluated:\t" + numNodes + "\n" + 
-					"MINIMAX estimate:\t\t" + val;
-		}
-	}
-	public static List<Character> getBoardConfig(String fName)
-	{
-		String line = null;
-		
-		try
-		{
-			FileReader fileR = new FileReader(fName);
-			BufferedReader buffR = new BufferedReader(fileR);
-			line = buffR.readLine();
-			ArrayList<Character> out = new ArrayList<Character>();
-			for (char a : line.toCharArray())
-			{
-				out.add(a);
-			}
-			buffR.close();
-			return out;
-		}
-		catch(FileNotFoundException ex)
-		{
-			System.out.println( "Unable to open file '" + fName + "'");
-		}
-		catch(IOException ex)
-		{
-			System.out.println("Error reading file '" + fName + "'");
-		}
-		return null;
-	}
-	
-	public static void writeOutput(outputObj out, String fName)
-	{
-		try {
-			// Assume default encoding.
-			FileWriter fileWriter = new FileWriter(fName);
-
-			// Always wrap FileWriter in BufferedWriter.
-			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-
-			// Note that write() does not automatically
-			// append a newline character.
-			bufferedWriter.write(out.toString());
-
-			// Always close files.
-			bufferedWriter.close();
-		}
-		catch(IOException ex) {
-			System.out.println("Error writing to file '" + fName + "'");
-		}
-	}
 }
-
-
-

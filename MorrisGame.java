@@ -1,4 +1,5 @@
 import java.util.*;
+import java.io.*;
 
 /*
  	This class serves as my collection of largely static functions which perform vital operations on the 
@@ -401,5 +402,60 @@ public class MorrisGame
 	private static boolean checkMill(MorrisPositionList b, posType C, int v1, int v2)
 	{
 		return (b.get(v1) == C && b.get(v2) == C);
+	}
+
+		/*
+		Reads the board config from the specified file
+	*/
+	public static List<Character> getBoardConfig(String fName)
+	{
+		String line = null;
+		
+		try
+		{
+			FileReader fileR = new FileReader(fName);
+			BufferedReader buffR = new BufferedReader(fileR);
+			line = buffR.readLine();
+			ArrayList<Character> out = new ArrayList<Character>();
+			for (char a : line.toCharArray())
+			{
+				out.add(a);
+			}
+			buffR.close();
+			return out;
+		}
+		catch(FileNotFoundException ex)
+		{
+			System.out.println( "Unable to open file '" + fName + "'");
+		}
+		catch(IOException ex)
+		{
+			System.out.println("Error reading file '" + fName + "'");
+		}
+		return null;
+	}
+	
+	/*
+		Writes the optimal move to the specified file 
+	*/
+	public static void writeOutput(outputObj out, String fName)
+	{
+		try {
+			// Assume default encoding.
+			FileWriter fileWriter = new FileWriter(fName);
+
+			// Always wrap FileWriter in BufferedWriter.
+			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+			// Note that write() does not automatically
+			// append a newline character.
+			bufferedWriter.write(out.toString());
+
+			// Always close files.
+			bufferedWriter.close();
+		}
+		catch(IOException ex) {
+			System.out.println("Error writing to file '" + fName + "'");
+		}
 	}
 }
