@@ -1,12 +1,18 @@
 import java.util.*;
 
+/*
+ 	This class serves as my collection of largely static functions which perform vital operations on the 
+ 	MorrisPositionList object which allows move generation, static evaluations, and other utilities 
+*/
 public class MorrisGame
 {
+	/* Opening game stage evaluation suggested by handout */
 	public static int statEstOpening(MorrisPositionList board)
 	{
 		return (board.getNumPieces(posType.W) - board.getNumPieces(posType.B));
 	}
 
+	/* MidgameEndgame evaluation suggested by handout */
 	public static int statEstMidgameEndgame(MorrisPositionList board)
 	{
 		int bPieces = board.getNumPieces(posType.B);
@@ -30,23 +36,59 @@ public class MorrisGame
 			return 1000*(wPieces - bPieces) - numBMoves;
 		}
 	}
-	/*
-	public static int statEstMidgameEndgameBlack(MorrisPositionList board)
+	
+	/* Here I improve the static evaluation by taking into account how many potential mills W has */
+	public static int statEstOpeningImproved(MorrisPositionList board)
 	{
-		MorrisPositionList tempb = board.getFlipBoard();
-		return statEstMidgameEndgame(board);
+		return (board.getNumPieces(posType.W) + numPotentialMills(posType.W, board) - board.getNumPieces(posType.B));
 	}
 	
-	public static int statEstOpeningBlack(MorrisPositionList board)
+	/* Here I improve the static evaluation by taking into account how many potential mills W has */
+	public static int statEstMidgameEndgameImproved(MorrisPositionList board)
 	{
-		MorrisPositionList tempb = board.getFlipBoard();
-		return statEstOpening(board);
+		int bPieces = board.getNumPieces(posType.B);
+		int wPieces = board.getNumPieces(posType.W);
+		int numPotMill = numPotentialMills(posType.W, board);
+		List<MorrisPositionList> l = generateMovesMidgameEndgame(board);
+		int numBMoves = l.size();
+		if (bPieces <= 2)
+		{
+			return 10000;
+		}
+		else if (wPieces <= 2)
+		{
+			return -10000;
+		}
+		else if (bPieces == 0)
+		{
+			return 10000;
+		}
+		else
+		{
+			return 1000*(wPieces - bPieces + numPotMill) - numBMoves;
+		}
 	}
-	*/
+	
+	/* Returns the number of positions that pos could take which would result in a mill */
+	public static int numPotentialMills(posType pos, MorrisPositionList board)
+	{
+		int counter = 0;
+		for (int i = 0; i< board.size(); i++)
+		{
+			posType bPos = board.get(i);
+			if (bPos == posType.X)
+			{
+				if (checkAllMills(i, bPos, board))
+				{
+					counter++;
+				}
+			}
+		}
+		return counter;
+	}
 	
 	/*
-		Input: a board position
-		Output: a list L of board positions
+		Generates all opening stage moves for white from given board
 	*/
 	public static List<MorrisPositionList> generateMovesOpening(MorrisPositionList board)
 	{
@@ -55,8 +97,7 @@ public class MorrisGame
 	}
 
 	/*
-		Input: a board position
-		Output: a list L of board positions
+		Generates all opening stage moves for black from given board 
 	*/
 	public static List<MorrisPositionList> generateMovesOpeningBlack(MorrisPositionList board)
 	{
@@ -71,17 +112,10 @@ public class MorrisGame
 	}
 
 	/*
-		Input: a board position
-		Output: a list L of board positions
+		Generates a list of all endgame midgame moves for white from given board
 	*/
 	public static List<MorrisPositionList> generateMovesMidgameEndgame(MorrisPositionList board)
 	{
-		/*
-			If the board has 3 white pieces:
-				Return the list produced by GnerateHopping
-			Else
-				Return the list produced by GenerateMove
-		*/
 		if (board.getNumPieces(posType.W) == 3)
 		{
 			return generateHopping(board);
@@ -94,8 +128,7 @@ public class MorrisGame
 
 	
 	/*
-		Input: a board position
-		Output: a list L of board positions
+		Generates a list of all endgame midgame moves for black from given board
 	*/
 	public static List<MorrisPositionList> generateMovesMidgameEndgameBlack(MorrisPositionList board)
 	{
@@ -110,24 +143,10 @@ public class MorrisGame
 	}
 
 	/*
-		Input: a board position
-		Output: a list L of board positions
+		Generates list of all possible additions for white from given board
 	*/
 	public static List<MorrisPositionList> generateAdd(MorrisPositionList board)
 	{
-		/*
-			L = emptyList
-			for each location in board:
-				if board[location] == empty
-					b = copyOfBoard
-					b[location] = W
-					if closeMill(location, b)
-						generateRemove(b, L)
-					else
-						add b to L
-			return L
-		*/
-
 		ArrayList<MorrisPositionList> l = new ArrayList<MorrisPositionList>();
 		for (int i = 0; i < board.size(); i++)
 		{
@@ -139,7 +158,6 @@ public class MorrisGame
 				{
 					int s = l.size();
 					l = generateRemove(b, l);
-					//System.out.println("Before: " + s + "\t After " + l.size());
 				}
 				else
 				{
@@ -151,26 +169,10 @@ public class MorrisGame
 	}
 
 	/*
-		Input: a board position
-		Output: a list L of board positions
+		Generates all possible moves for white from the given board when white can hop(numWhite = 2)
 	*/
 	public static List<MorrisPositionList> generateHopping(MorrisPositionList board)
 	{
-		/*
-			L = emptyList
-			for each location alpha in board:
-				if board[alpha] == W
-					for each location beta in board
-						if board[beta] == empty
-							b = copyOfBoard
-							b[alpha] = empty
-							b[beta] = W
-							if closeMill(beta, b)
-								generateRemove(b, L)
-							else
-								add b to L
-			return L
-		*/
 		ArrayList<MorrisPositionList> l = new ArrayList<MorrisPositionList>();
 		for (int i = 0; i < board.size(); i++)
 		{
@@ -200,27 +202,10 @@ public class MorrisGame
 
 
 	/*
-		Input: a board position
-		Output: a list L of board positions
+		Generates all possible moves for white from the given board(both additions and removals)
 	*/
 	public static List<MorrisPositionList> generateMove(MorrisPositionList board)
 	{
-		/*
-			L = emptyList
-			for each location in board:
-				if board[location] == W
-					n = listOfNeighbors(n)
-					for each j in n
-						if board[j] == empty
-							b = copyOfBoard()
-							b[location] = empty;
-							b[j] = W;
-							if closeMill(j, b)
-								GenerateRemove(b, L)
-							else
-								add b to L
-			return L
-		*/
 		ArrayList<MorrisPositionList> l = new ArrayList<MorrisPositionList>();
 		for (int i = 0; i < board.size(); i++)
 		{
@@ -250,21 +235,10 @@ public class MorrisGame
 	}
 
 	/*
-		Input: a board position and a list L
-		Output: positions are added to L by removing black pieces
+	 * Generates all possible removals that white could perform from the given board(occurs when white gets a mill)
 	*/
 	public static ArrayList<MorrisPositionList> generateRemove(MorrisPositionList board, ArrayList<MorrisPositionList> l)
 	{
-		/*
-			for each location in board:
-				if board[location] == B
-					if not closeMill(location, board)
-						b = copyOfBoard()
-						b[location] = empty
-						add b to L
-			If no positions were added(all back pieces are in mills) add b to L
-			return L
-		*/
 		for (int i = 0; i < board.size(); i++)
 		{
 			if (board.get(i) == posType.B)
@@ -277,27 +251,14 @@ public class MorrisGame
 				}
 			}
 		}
-		/*
-		if (allInMill(posType.B))
-		{
-			l.add(b);
-		}
-		*/
 		return l;
 	}
 
 	/*
-		Input: a location j in the array representing the board
-		Output: a list of locations in the array corresponding to j's neighbors
+		Stores the neighbors of each vertex j
 	*/
 	public static List<Integer> neighbors(int j)
 	{
-		/*
-			switch(j)
-				j == 0:
-					return [1, 3, 8](these are d0, b1, a3)
-				etc.
-		*/
 		switch(j)
 		{
 			case 0:
@@ -352,47 +313,35 @@ public class MorrisGame
 	}
 
 	/*
-		Input: a location j in the array representing the board and the board b
-		Output: true if the move to j closes a mill
+		Determines if j closes a mill(ie gets three connected nodes in a row)
 	*/
 	public static boolean closeMill(int j, MorrisPositionList b)
 	{
-		/*
-			switch(j)
-				j == 0:
-					if ((b[1] == C && b[2] == C) || (b[3] == C && b[6] == C) || (b[8] == C && b[20] == C))
-						return true
-					else
-						return false
-				etc.
-
-			The following logic is based on the following list of mills:
-			0	1	2
-			0	3	6
-			0	8 	20
-			11	12	13
-			14	15	16
-			15	18	21
-			16	19	22
-			17	18	19
-			2 	5	7
-			20	17	14
-			20	21	22
-			22	13	2
-			3	4	5
-			3	9	17
-			5	12	19
-			6	10 	14
-			7	11	16
-			8	9	10
-		*/
-
 		posType C = b.get(j);
 		if (C == posType.X)
 		{
 			return false;
 		}
-
+		else
+		{
+			return checkAllMills(j, C, b);
+		}
+	}
+	
+	/*
+		Checks all possible mills to see if C at j would fill a mill
+	*/
+	public static boolean checkAllMills(int j, posType C, MorrisPositionList b)
+	{
+		/*
+			The following logic is based on the following list of mills:
+			0	1	2		0	3	6		0	8 	20
+			11	12	13		14	15	16		15	18	21
+			16	19	22		17	18	19		2 	5	7
+			20	17	14		20	21	22		22	13	2
+			3	4	5		3	9	17		5	12	19
+			6	10 	14		7	11	16		8	9	10
+		 */
 		switch(j)
 		{
 			case 0:
@@ -445,7 +394,10 @@ public class MorrisGame
 				return false;
 		}
 	}
-
+	
+	/*
+ 		Helper function for above
+	 */
 	private static boolean checkMill(MorrisPositionList b, posType C, int v1, int v2)
 	{
 		return (b.get(v1) == C && b.get(v2) == C);
