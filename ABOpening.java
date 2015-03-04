@@ -9,7 +9,6 @@ public class ABOpening
 		String outputFileName = args[1];
 		int depth = Integer.parseInt(args[2]);
 		MorrisPositionList initBoard = new MorrisPositionList(getBoardConfig(inputFileName));
-		System.out.println(initBoard);
 		outputObj algOut = ABMiniMax(depth, true, initBoard, Integer.MIN_VALUE, Integer.MAX_VALUE);
 		writeOutput(algOut, outputFileName);
 	}

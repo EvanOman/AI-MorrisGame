@@ -11,7 +11,6 @@ public class MiniMaxGameBlack
 		String outputFileName = args[1];
 		int depth = Integer.parseInt(args[2]);
 		MorrisPositionList initBoard = new MorrisPositionList(getBoardConfig(inputFileName));
-		System.out.println(initBoard);
 		outputObj algOut = MiniMax(depth, true, initBoard);
 		writeOutput(algOut, outputFileName);
 	}
@@ -22,7 +21,7 @@ public class MiniMaxGameBlack
 		/* Means that we are at a terminal node */
 		if (depth == 0)
 		{
-			out.val = MorrisGame.statEstMidgameEndgameBlack(board);
+			out.val = MorrisGame.statEstMidgameEndgame(board);
 			return out;
 		}
 
