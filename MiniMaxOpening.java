@@ -13,7 +13,49 @@ public class MiniMaxOpening
 		outputObj algOut = MiniMax(depth, true, initBoard);
 		writeOutput(algOut, outputFileName);
 	}
-	
+
+	public static outputObj MiniMax(int depth, boolean isWhite, MorrisPositionList board)
+	{
+		outputObj out = new outputObj();
+		/* Means that we are at a terminal node */
+		if (depth == 0)
+		{
+			out.val = MorrisGame.statEstOpening(board);
+			out.b = board;
+			return out;
+		}
+
+		outputObj in = new outputObj();
+		List<MorrisPositionList> nextMoves = (isWhite) ? MorrisGame.generateMovesOpening(board) : MorrisGame.generateMovesOpeningBlack(board);
+		out.val = (isWhite) ? Integer.MAX_VALUE : Integer.MIN_VALUE;
+		for (MorrisPositionList b : nextMoves)
+		{
+			if (isWhite)
+			{
+				in = MiniMax(depth - 1, false, b);
+				out.numNodes += in.numNodes;
+				out.numNodes++;
+				if (in.val > out.val)
+				{
+					out.val = in.val;
+					out.b = b;
+				}
+			}
+			else
+			{
+				in = MiniMax(depth - 1, true, b);
+				out.numNodes += in.numNodes;
+				out.numNodes++;
+				if (in.val < out.val)
+				{
+					out.val = in.val;
+					out.b = b;
+				}
+			}
+		}
+		return out;
+	}
+
 	public static List<Character> getBoardConfig(String fName)
 	{
 		String line = null;
@@ -44,7 +86,8 @@ public class MiniMaxOpening
 	
 	public static void writeOutput(outputObj out, String fName)
 	{
-		try {
+		try
+		{
 			// Assume default encoding.
 			FileWriter fileWriter = new FileWriter(fName);
 
@@ -62,57 +105,6 @@ public class MiniMaxOpening
 			System.out.println("Error writing to file '" + fName + "'");
 		}
 	}
-
-	public static outputObj MiniMax(int depth, boolean isWhite, MorrisPositionList board)
-	{
-		outputObj out = new outputObj();
-		/* Means that we are at a terminal node */
-		if (depth == 0)
-		{
-			//System.out.println(board);
-			out.val = MorrisGame.statEstOpening(board);
-			//System.out.println("Value: " + val);
-			
-			return out;
-		}
-
-		List<MorrisPositionList> nextMoves;
-		outputObj in = new outputObj();
-		if (isWhite)
-		{
-			nextMoves = MorrisGame.generateMovesOpening(board);
-			out.val = Integer.MIN_VALUE;
-			for (MorrisPositionList b : nextMoves)
-			{
-				in = MiniMax(depth - 1, false, b);
-				out.numNodes += in.numNodes;
-				out.numNodes++;
-				if (in.val > out.val)
-				{
-					out.val = in.val;
-					out.b = b;
-				}
-			}
-		}
-		else
-		{
-			nextMoves = MorrisGame.generateMovesOpeningBlack(board);
-			out.val = Integer.MAX_VALUE;
-			for (MorrisPositionList b : nextMoves)
-			{
-				in = MiniMax(depth - 1, true, b);
-				out.numNodes += in.numNodes;
-				out.numNodes++;
-				if (in.val < out.val)
-				{
-					out.val = in.val;
-					out.b = b;
-				}
-			}
-		}
-		return out;
-	}
-
 	
 	public static class outputObj
 	{

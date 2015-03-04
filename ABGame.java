@@ -14,55 +14,7 @@ public class ABGame
 		writeOutput(algOut, outputFileName);
 	}
 	
-	public static List<Character> getBoardConfig(String fName)
-	{
-		String line = null;
-		
-		try
-		{
-			FileReader fileR = new FileReader(fName);
-			BufferedReader buffR = new BufferedReader(fileR);
-			line = buffR.readLine();
-			ArrayList<Character> out = new ArrayList<Character>();
-			for (char a : line.toCharArray())
-			{
-				out.add(a);
-			}
-			buffR.close();
-			return out;
-		}
-		catch(FileNotFoundException ex)
-		{
-			System.out.println( "Unable to open file '" + fName + "'");
-		}
-		catch(IOException ex)
-		{
-			System.out.println("Error reading file '" + fName + "'");
-		}
-		return null;
-	}
 	
-	public static void writeOutput(outputObj out, String fName)
-	{
-		try {
-			// Assume default encoding.
-			FileWriter fileWriter = new FileWriter(fName);
-
-			// Always wrap FileWriter in BufferedWriter.
-			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-
-			// Note that write() does not automatically
-			// append a newline character.
-			bufferedWriter.write(out.toString());
-
-			// Always close files.
-			bufferedWriter.close();
-		}
-		catch(IOException ex) {
-			System.out.println("Error writing to file '" + fName + "'");
-		}
-	}
-
 	public static outputObj ABMiniMax(int depth, boolean isWhite, MorrisPositionList board, int alpha, int beta)
 	{
 		outputObj out = new outputObj();
@@ -111,6 +63,54 @@ public class ABGame
 		return out;
 	}
 
+	public static List<Character> getBoardConfig(String fName)
+	{
+		String line = null;
+		
+		try
+		{
+			FileReader fileR = new FileReader(fName);
+			BufferedReader buffR = new BufferedReader(fileR);
+			line = buffR.readLine();
+			ArrayList<Character> out = new ArrayList<Character>();
+			for (char a : line.toCharArray())
+			{
+				out.add(a);
+			}
+			buffR.close();
+			return out;
+		}
+		catch(FileNotFoundException ex)
+		{
+			System.out.println( "Unable to open file '" + fName + "'");
+		}
+		catch(IOException ex)
+		{
+			System.out.println("Error reading file '" + fName + "'");
+		}
+		return null;
+	}
+	
+	public static void writeOutput(outputObj out, String fName)
+	{
+		try {
+			// Assume default encoding.
+			FileWriter fileWriter = new FileWriter(fName);
+
+			// Always wrap FileWriter in BufferedWriter.
+			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+			// Note that write() does not automatically
+			// append a newline character.
+			bufferedWriter.write(out.toString());
+
+			// Always close files.
+			bufferedWriter.close();
+		}
+		catch(IOException ex) {
+			System.out.println("Error writing to file '" + fName + "'");
+		}
+	}
 	
 	public static class outputObj
 	{

@@ -23,16 +23,16 @@ public class MiniMaxGame
 		if (depth == 0)
 		{
 			out.val = MorrisGame.statEstMidgameEndgame(board);
+			out.b = board;
 			return out;
 		}
 
-		List<MorrisPositionList> nextMoves;
 		outputObj in = new outputObj();
-		if (isWhite)
+		List<MorrisPositionList> nextMoves = (isWhite) ? MorrisGame.generateMovesMidgameEndgame(board) : MorrisGame.generateMovesMidgameEndgameBlack(board);
+		out.val = (isWhite) ? Integer.MAX_VALUE : Integer.MIN_VALUE;
+		for (MorrisPositionList b : nextMoves)
 		{
-			nextMoves = MorrisGame.generateMovesMidgameEndgame(board);
-			out.val = Integer.MIN_VALUE;
-			for (MorrisPositionList b : nextMoves)
+			if (isWhite)
 			{
 				in = MiniMax(depth - 1, false, b);
 				out.numNodes += in.numNodes;
@@ -43,12 +43,7 @@ public class MiniMaxGame
 					out.b = b;
 				}
 			}
-		}
-		else
-		{
-			nextMoves = MorrisGame.generateMovesOpeningBlack(board);
-			out.val = Integer.MAX_VALUE;
-			for (MorrisPositionList b : nextMoves)
+			else
 			{
 				in = MiniMax(depth - 1, true, b);
 				out.numNodes += in.numNodes;

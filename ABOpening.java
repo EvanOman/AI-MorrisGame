@@ -14,6 +14,53 @@ public class ABOpening
 		writeOutput(algOut, outputFileName);
 	}
 	
+	public static outputObj ABMiniMax(int depth, boolean isWhite, MorrisPositionList board, int alpha, int beta)
+	{
+		outputObj out = new outputObj();
+		/* Means that we are at a terminal node */
+		if (depth == 0)
+		{
+			out.val = MorrisGame.statEstOpening(board);
+			out.b = board;
+			return out;
+		}
+
+		outputObj in = new outputObj();
+		List<MorrisPositionList> nextMoves = (isWhite) ? MorrisGame.generateMovesOpening(board) : MorrisGame.generateMovesOpeningBlack(board);
+		for (MorrisPositionList b : nextMoves)
+		{
+			if (isWhite)
+			{
+				in = ABMiniMax(depth - 1, false, b, alpha, beta);
+				out.numNodes += in.numNodes;
+				out.numNodes++;
+				if (in.val > alpha)
+				{
+					alpha = in.val;
+					out.b = b;
+				}
+			}
+			else
+			{
+				in = ABMiniMax(depth - 1, true, b, alpha, beta);
+				out.numNodes += in.numNodes;
+				out.numNodes++;
+				if (in.val < beta)
+				{
+					beta = in.val;
+					out.b = b;
+				}
+			}
+			if (alpha >= beta)
+			{
+				break;
+			}
+		}
+		
+		out.val = (isWhite) ? alpha : beta;
+		return out;
+	}
+
 	public static List<Character> getBoardConfig(String fName)
 	{
 		String line = null;
@@ -61,54 +108,6 @@ public class ABOpening
 		catch(IOException ex) {
 			System.out.println("Error writing to file '" + fName + "'");
 		}
-	}
-
-	public static outputObj ABMiniMax(int depth, boolean isWhite, MorrisPositionList board, int alpha, int beta)
-	{
-		outputObj out = new outputObj();
-		/* Means that we are at a terminal node */
-		if (depth == 0)
-		{
-			out.val = MorrisGame.statEstOpening(board);
-			out.b = board;
-			return out;
-		}
-
-		List<MorrisPositionList> nextMoves;
-		outputObj in = new outputObj();
-		nextMoves = (isWhite) ? MorrisGame.generateMovesOpening(board) : MorrisGame.generateMovesOpeningBlack(board);
-		for (MorrisPositionList b : nextMoves)
-		{
-			if (isWhite)
-			{
-				in = ABMiniMax(depth - 1, false, b, alpha, beta);
-				out.numNodes += in.numNodes;
-				out.numNodes++;
-				if (in.val > alpha)
-				{
-					alpha = in.val;
-					out.b = b;
-				}
-			}
-			else
-			{
-				in = ABMiniMax(depth - 1, true, b, alpha, beta);
-				out.numNodes += in.numNodes;
-				out.numNodes++;
-				if (in.val < beta)
-				{
-					beta = in.val;
-					out.b = b;
-				}
-			}
-			if (alpha >= beta)
-			{
-				break;
-			}
-		}
-		
-		out.val = (isWhite) ? alpha : beta;
-		return out;
 	}
 
 	
