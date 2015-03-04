@@ -135,12 +135,13 @@ public class MorrisGame
 	{
 		MorrisPositionList tempb = board.getFlipBoard();
 		List<MorrisPositionList> moves = generateMovesMidgameEndgame(tempb);
+		ArrayList<MorrisPositionList> out = new ArrayList<MorrisPositionList>();
 		for (int i = 0; i < moves.size(); i++)
 		{
 			MorrisPositionList b = moves.get(i);
-			moves.set(i, b.getFlipBoard());
+			out.add(b.getFlipBoard());
 		}
-		return moves;
+		return out;
 	}
 
 	/*
