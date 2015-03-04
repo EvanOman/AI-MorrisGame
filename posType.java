@@ -1,3 +1,4 @@
+/* Simple enum for our possible node markers */
 public enum posType
 {
 	X ('X'),

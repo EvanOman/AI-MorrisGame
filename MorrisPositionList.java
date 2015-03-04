@@ -1,12 +1,18 @@
 import java.util.*;
+
+/* Class which is used to represent a board state/move option */
 public class MorrisPositionList
 {
+	/* Fundamentally all these functions augment the main functionality of this List of posTypes*/
 	public List<posType> posList;
+
+	/* Default constructor, all X's*/
 	public MorrisPositionList()
 	{
 		posList = Arrays.asList(posType.X, posType.X, posType.X, posType.X, posType.X, posType.X, posType.X, posType.X, posType.X, posType.X, posType.X, posType.X, posType.X, posType.X, posType.X, posType.X, posType.X, posType.X, posType.X, posType.X, posType.X, posType.X, posType.X);
 	}
 
+	/* Allows user to specify what the board locations should be */
 	public MorrisPositionList(List<Character> inputBoard)
 	{
 		posList = new ArrayList<posType>();
@@ -43,6 +49,7 @@ public class MorrisPositionList
 		return (new MorrisPositionList(boardState));
 	}
 
+	/* Return the inverse of the current board(useful for generating black moves)*/
 	public MorrisPositionList getFlipBoard()
 	{
 		MorrisPositionList out = new MorrisPositionList();
@@ -65,6 +72,22 @@ public class MorrisPositionList
 		return out;
 	}
 
+	public int getNumPieces(posType piecePos)
+	{
+		int counter = 0;
+		for (posType pos : posList)
+		{
+			if (pos == piecePos)
+			{
+				counter++;
+			}
+		}
+		return counter;
+	}
+
+	/*
+		Some List functionality wrappers for convenience
+	*/
 	public posType get(int i)
 	{
 		return posList.get(i);
@@ -83,19 +106,6 @@ public class MorrisPositionList
 	public void set(int i, posType val)
 	{
 		posList.set(i, val);
-	}
-
-	public int getNumPieces(posType piecePos)
-	{
-		int counter = 0;
-		for (posType pos : posList)
-		{
-			if (pos == piecePos)
-			{
-				counter++;
-			}
-		}
-		return counter;
 	}
 
 	public String toString()
