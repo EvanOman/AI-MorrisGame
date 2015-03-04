@@ -1,7 +1,7 @@
 import java.util.*;
 import java.io.*;
 
-public class MiniMaxOpening
+public class ABOpening
 {
 	public static void main(String[] args)
 	{
@@ -10,7 +10,7 @@ public class MiniMaxOpening
 		int depth = Integer.parseInt(args[2]);
 		MorrisPositionList initBoard = new MorrisPositionList(getBoardConfig(inputFileName));
 		System.out.println(initBoard);
-		outputObj algOut = MiniMax(depth, true, initBoard);
+		outputObj algOut = ABMiniMax(depth, true, initBoard, Integer.MIN_VALUE, Integer.MAX_VALUE);
 		writeOutput(algOut, outputFileName);
 	}
 	
@@ -63,61 +63,54 @@ public class MiniMaxOpening
 		}
 	}
 
-	public static outputObj MiniMax(int depth, boolean isWhite, MorrisPositionList board)
+	public static outputObj ABMiniMax(int depth, boolean isWhite, MorrisPositionList board, int alpha, int beta)
 	{
 		outputObj out = new outputObj();
 		/* Means that we are at a terminal node */
 		if (depth == 0)
 		{
-			//System.out.println(board);
 			out.val = MorrisGame.statEstOpening(board);
-			//System.out.println("Value: " + val);
-			
+			out.b = board;
 			return out;
 		}
 
 		List<MorrisPositionList> nextMoves;
 		outputObj in = new outputObj();
-		if (isWhite)
+		nextMoves = (isWhite) ? MorrisGame.generateMovesOpening(board) : MorrisGame.generateMovesOpeningBlack(board);
+		for (MorrisPositionList b : nextMoves)
 		{
-			nextMoves = MorrisGame.generateMovesOpening(board);
-			out.val = Integer.MIN_VALUE;
-			for (MorrisPositionList b : nextMoves)
+			if (isWhite)
 			{
-				in = MiniMax(depth - 1, false, b);
+				in = ABMiniMax(depth - 1, false, b, alpha, beta);
 				out.numNodes += in.numNodes;
 				out.numNodes++;
-				if (in.val > out.val)
+				if (in.val > alpha)
 				{
-					out.val = in.val;
+					alpha = in.val;
 					out.b = b;
 				}
 			}
-		}
-		else
-		{
-			nextMoves = MorrisGame.generateMovesOpeningBlack(board);
-			out.val = Integer.MAX_VALUE;
-			for (MorrisPositionList b : nextMoves)
+			else
 			{
-				in = MiniMax(depth - 1, true, b);
+				in = ABMiniMax(depth - 1, true, b, alpha, beta);
 				out.numNodes += in.numNodes;
 				out.numNodes++;
-				if (in.val < out.val)
+				if (in.val < beta)
 				{
-					out.val = in.val;
+					beta = in.val;
 					out.b = b;
 				}
 			}
+			if (alpha >= beta)
+			{
+				break;
+			}
 		}
+		
+		out.val = (isWhite) ? alpha : beta;
 		return out;
 	}
 
-	public static void test(List<Integer> l)
-	{
-		l.add(4);
-		System.out.println(l);
-	}
 	
 	public static class outputObj
 	{

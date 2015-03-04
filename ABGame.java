@@ -1,10 +1,8 @@
 import java.util.*;
 import java.io.*;
 
-public class ABOpening
+public class ABGame
 {
-	public static int COUNTER = 0;
-
 	public static void main(String[] args)
 	{
 		String inputFileName = args[0];
@@ -12,74 +10,10 @@ public class ABOpening
 		int depth = Integer.parseInt(args[2]);
 		MorrisPositionList initBoard = new MorrisPositionList(getBoardConfig(inputFileName));
 		System.out.println(initBoard);
-		outputObj algOut = MiniMax(depth, true, initBoard);
+		outputObj algOut = ABMiniMax(depth, true, initBoard, Integer.MIN_VALUE, Integer.MAX_VALUE);
 		writeOutput(algOut, outputFileName);
 	}
-
-	public static outputObj MiniMax(int depth, boolean isWhite, MorrisPositionList board)
-	{
-		outputObj out = new outputObj();
-		/* Means that we are at a terminal node */
-		if (depth == 0)
-		{
-			out.val = MorrisGame.statEstMidgameEndgame(board);
-			return out;
-		}
-
-		List<MorrisPositionList> nextMoves;
-		outputObj in = new outputObj();
-		if (isWhite)
-		{
-			nextMoves = MorrisGame.generateMovesMidgameEndgame(board);
-			out.val = Integer.MIN_VALUE;
-			for (MorrisPositionList b : nextMoves)
-			{
-				in = MiniMax(depth - 1, false, b);
-				out.numNodes += in.numNodes;
-				out.numNodes++;
-				if (in.val > out.val)
-				{
-					out.val = in.val;
-					out.b = b;
-				}
-			}
-		}
-		else
-		{
-			nextMoves = MorrisGame.generateMovesOpeningBlack(board);
-			out.val = Integer.MAX_VALUE;
-			for (MorrisPositionList b : nextMoves)
-			{
-				in = MiniMax(depth - 1, true, b);
-				out.numNodes += in.numNodes;
-				out.numNodes++;
-				if (in.val < out.val)
-				{
-					out.val = in.val;
-					out.b = b;
-				}
-			}
-		}
-		return out;
-	}
-
-	public static void test(List<Integer> l)
-	{
-		l.add(4);
-		System.out.println(l);
-	}
 	
-	public static class outputObj
-	{
-		public int val, numNodes;
-		public MorrisPositionList b;
-		public String toString()
-		{
-			return 	"BoardPosition:\t\t\t" + b + "\n" +
-					"Positions Evaluated:\t" + numNodes + "\n" + 
-					"MINIMAX estimate:\t\t" + val;
-		}
-	}
 	public static List<Character> getBoardConfig(String fName)
 	{
 		String line = null;
@@ -126,6 +60,67 @@ public class ABOpening
 		}
 		catch(IOException ex) {
 			System.out.println("Error writing to file '" + fName + "'");
+		}
+	}
+
+	public static outputObj ABMiniMax(int depth, boolean isWhite, MorrisPositionList board, int alpha, int beta)
+	{
+		outputObj out = new outputObj();
+		/* Means that we are at a terminal node */
+		if (depth == 0)
+		{
+			out.val = MorrisGame.statEstMidgameEndgame(board);
+			out.b = board;
+			return out;
+		}
+
+		List<MorrisPositionList> nextMoves;
+		outputObj in = new outputObj();
+		nextMoves = (isWhite) ? MorrisGame.generateMovesMidgameEndgame(board) : MorrisGame.generateMovesMidgameEndgameBlack(board);
+		for (MorrisPositionList b : nextMoves)
+		{
+			if (isWhite)
+			{
+				in = ABMiniMax(depth - 1, false, b, alpha, beta);
+				out.numNodes += in.numNodes;
+				out.numNodes++;
+				if (in.val > alpha)
+				{
+					alpha = in.val;
+					out.b = b;
+				}
+			}
+			else
+			{
+				in = ABMiniMax(depth - 1, true, b, alpha, beta);
+				out.numNodes += in.numNodes;
+				out.numNodes++;
+				if (in.val < beta)
+				{
+					beta = in.val;
+					out.b = b;
+				}
+			}
+			if (alpha >= beta)
+			{
+				break;
+			}
+		}
+		
+		out.val = (isWhite) ? alpha : beta;
+		return out;
+	}
+
+	
+	public static class outputObj
+	{
+		public int val, numNodes;
+		public MorrisPositionList b;
+		public String toString()
+		{
+			return 	"BoardPosition:\t\t\t" + b + "\n" +
+					"Positions Evaluated:\t" + numNodes + "\n" + 
+					"MINIMAX estimate:\t\t" + val;
 		}
 	}
 }

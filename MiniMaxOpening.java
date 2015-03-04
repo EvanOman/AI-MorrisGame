@@ -113,11 +113,6 @@ public class MiniMaxOpening
 		return out;
 	}
 
-	public static void test(List<Integer> l)
-	{
-		l.add(4);
-		System.out.println(l);
-	}
 	
 	public static class outputObj
 	{
