@@ -30,6 +30,18 @@ public class MorrisGame
 			return 1000*(wPieces - bPieces) - numBMoves;
 		}
 	}
+	
+	public static int statEstMidgameEndgameBlack(MorrisPositionList board)
+	{
+		MorrisPositionList tempb = board.getFlipBoard();
+		return statEstMidgameEndgame(tempb);
+	}
+	
+	public static int statEstOpeningBlack(MorrisPositionList board)
+	{
+		MorrisPositionList tempb = board.getFlipBoard();
+		return statEstOpening(tempb);
+	}
 	/*
 		Input: a board position
 		Output: a list L of board positions

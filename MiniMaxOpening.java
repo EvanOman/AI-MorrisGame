@@ -21,7 +21,6 @@ public class MiniMaxOpening
 		if (depth == 0)
 		{
 			out.val = MorrisGame.statEstOpening(board);
-			//out.b = board;
 			return out;
 		}
 
