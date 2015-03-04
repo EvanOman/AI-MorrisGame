@@ -22,7 +22,7 @@ public class ABGame
 		if (depth == 0)
 		{
 			out.val = MorrisGame.statEstMidgameEndgame(board);
-			out.b = board;
+			//out.b = board;
 			return out;
 		}
 
