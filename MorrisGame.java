@@ -375,7 +375,7 @@ public class MorrisGame
 			case 13:
 				return (checkMill(b, C, 11, 12) || checkMill(b, C, 2, 22));
 			case 14:
-				return (checkMill(b, C, 17, 20) || checkMill(b, C, 15, 16) || checkMill(b, C, 6, 14));
+				return (checkMill(b, C, 17, 20) || checkMill(b, C, 15, 16) || checkMill(b, C, 6, 10));
 			case 15:
 				return (checkMill(b, C, 14, 16) || checkMill(b, C, 18, 21));
 			case 16:
